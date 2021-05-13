@@ -81,7 +81,7 @@ contract LicenseToken is ERC721Enumerable, Ownable {
         string memory tokenUri,
         uint64 _randomNum
     ) public checkOwnerOfPictureToken(_to, _pictureTokenId) {
-        uint256 _licenseTokenId = uint256(keccak256(abi.encodePacked( tokenUri, _randomNum )));
+        uint64 _licenseTokenId = uint64(bytes8(keccak256(abi.encodePacked( tokenUri, _randomNum ))));
         _safeMint(_to, _licenseTokenId);
         _setTokenURI(_licenseTokenId, tokenUri);
 
@@ -100,7 +100,7 @@ contract LicenseToken is ERC721Enumerable, Ownable {
         safeTransferFrom(from, to, tokenId, "");
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    function tokenURI(uint64 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         string memory baseURI = _baseURI();
