@@ -24,7 +24,7 @@ contract PictureToken is ERC721Enumerable {
         safeTransferFrom(from, to, tokenId, "");
     }
 
-    function tokenURI(uint64 tokenId) public view returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         string memory baseURI = _baseURI();
