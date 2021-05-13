@@ -14,7 +14,7 @@ contract LicenseToken is ERC721Enumerable, Ownable {
     mapping(uint256 => LicenseTokenInfo) private _licenseIdToInfo;
     mapping(uint256 => string) private _tokenURIs;
 
-    event Mint(address, uint256, uint256, uint64, uint64, uint256);
+    event Mint(address, uint256, uint256, uint64, uint64, uint256, uint64);
     event SetPictureTokenAddress(address _pictureTokenAddr);
 
     constructor(address _pictureTokenAddr) ERC721("LicenseToken", "LIC") {
@@ -75,13 +75,13 @@ contract LicenseToken is ERC721Enumerable, Ownable {
     function safeMint(
         address _to,
         uint256 _pictureTokenId,
-        uint256 _licenseTokenId,
         uint64 _startTime,
         uint64 _endTime,
         uint256 _quantity,
-        string memory tokenUri
+        string memory tokenUri,
+        uint64 _randomNum
     ) public checkOwnerOfPictureToken(_to, _pictureTokenId) {
-        // _beforeTokenTransfer(address(0), _to, _licenseTokenId);
+        uint256 _licenseTokenId = uint256(keccak256(abi.encodePacked( tokenUri, _randomNum )));
         _safeMint(_to, _licenseTokenId);
         _setTokenURI(_licenseTokenId, tokenUri);
 
@@ -93,11 +93,10 @@ contract LicenseToken is ERC721Enumerable, Ownable {
             isValid: true
         });
 
-        emit Mint(_to, _pictureTokenId, _licenseTokenId, _startTime, _endTime, _quantity);
+        emit Mint(_to, _pictureTokenId, _licenseTokenId, _startTime, _endTime, _quantity, _randomNum);
     }
     
     function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
-        _beforeTokenTransfer(from, to, tokenId);
         safeTransferFrom(from, to, tokenId, "");
     }
 

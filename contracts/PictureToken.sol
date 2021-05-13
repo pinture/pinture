@@ -13,16 +13,14 @@ contract PictureToken is ERC721Enumerable {
 
     function safeMint(
         address to,
-        uint256 tokenId,
         string memory tokenUri
     ) public {
-        _beforeTokenTransfer(address(0), to, tokenId);
+        uint256 tokenId = uint256(keccak256(abi.encodePacked(tokenUri)));
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenUri);
     }
  
     function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
-        _beforeTokenTransfer(from, to, tokenId);
         safeTransferFrom(from, to, tokenId, "");
     }
 

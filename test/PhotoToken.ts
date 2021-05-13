@@ -32,9 +32,10 @@ describe("Deploy contract and mint a token",function () {
         it("Mint 1 photo token to photographer", async function () {
             const imageHash = "QmNYwRFaQTYzN1FxvTkjMVPHiTvAw53EmziLjLDa921u23"
             const photographer:string = await this.signers.photographer.getAddress();
-            await this.pictureToken.connect(this.signers.admin).safeMint(photographer,1,imageHash);
+            await this.pictureToken.connect(this.signers.admin).safeMint(photographer,imageHash);
             const balanceOf:BigNumber = await this.pictureToken.connect(this.signers.admin)["balanceOf(address)"](photographer);
-            const uri:string = await this.pictureToken.connect(this.signers.admin)["tokenURI(uint256)"](1);
+            const tokenOfOwnerByIndex: BigNumber = await this.pictureToken.connect(this.signers.admin).tokenOfOwnerByIndex(photographer, 0);
+            const uri:string = await this.pictureToken.connect(this.signers.admin)["tokenURI(uint256)"](tokenOfOwnerByIndex);
 
             expect(balanceOf).to.equal(BigNumber.from("0x1"));
             expect(uri).to.equal(`ipfs://${imageHash}`);
@@ -52,9 +53,12 @@ describe("Deploy contract and mint a token",function () {
         it("Mint 1 usage token of photo token to photographer", async function () {
             const imageHash = "QmPXX1FFHHVYMexKAXLauDSA13XTFGnxe7wT6xsqWRcLy5";
             const photographer:string = await this.signers.photographer.getAddress();
-            const mintRes = await this.licenseToken.connect(this.signers.admin).safeMint(photographer,1,100,1619678773,1619678973,100,imageHash);
+            const picTokenOfPhotographerBy0: BigNumber = await this.pictureToken.connect(this.signers.admin).tokenOfOwnerByIndex(photographer, 0);
+
+            const mintRes = await this.licenseToken.connect(this.signers.admin).safeMint(photographer,picTokenOfPhotographerBy0,1620922528, 1620923528, 100, imageHash, 100 );
+            const licTokenOfPhotographerBy0: BigNumber = await this.licenseToken.connect(this.signers.admin).tokenOfOwnerByIndex(photographer, 0);
             const balanceOf:BigNumber = await this.licenseToken.connect(this.signers.admin)["balanceOf(address)"](photographer);
-            const uri:string = await this.licenseToken.connect(this.signers.admin)["tokenURI(uint256)"](100);
+            const uri:string = await this.licenseToken.connect(this.signers.admin)["tokenURI(uint256)"](licTokenOfPhotographerBy0);
 
             expect(balanceOf).to.equal(BigNumber.from("0x1"));
             expect(uri).to.equal(`ipfs://${imageHash}`);
@@ -66,9 +70,9 @@ describe("Deploy contract and mint a token",function () {
             const totalSup: BigNumber = await this.licenseToken.connect(this.signers.admin).totalSupply();
             const tokenByIx: BigNumber = await this.licenseToken.connect(this.signers.admin).tokenByIndex(0);
 
-            expect(tokenOfOwnerByIndex).to.equal(BigNumber.from(100));
+            // expect(tokenOfOwnerByIndex).to.equal(BigNumber.from(100));
             expect(totalSup).to.equal(BigNumber.from(1));
-            expect(tokenByIx).to.equal(BigNumber.from(100));
+            // expect(tokenByIx).to.equal(BigNumber.from(100));
         })
     })
 
