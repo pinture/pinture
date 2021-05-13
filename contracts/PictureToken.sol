@@ -2,31 +2,28 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract PhotoToken is ERC721 {
+contract PictureToken is ERC721Enumerable {
     using Strings for uint256;
 
-    mapping(uint256 => string) _tokenURIs;
+    mapping(uint256 => string) private _tokenURIs;
 
-    constructor() ERC721("PhotoToken", "PHOTO") {}
+    constructor() ERC721("PictureToken", "PIC") {}
 
     function safeMint(
         address to,
         uint256 tokenId,
         string memory tokenUri
     ) public {
+        _beforeTokenTransfer(address(0), to, tokenId);
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenUri);
     }
-
-    function _safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) public {
-        safeTransferFrom(from, to, tokenId, data);
+ 
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+        _beforeTokenTransfer(from, to, tokenId);
+        safeTransferFrom(from, to, tokenId, "");
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
