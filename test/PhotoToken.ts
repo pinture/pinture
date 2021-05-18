@@ -94,8 +94,11 @@ describe("Deploy contract and mint a token",function () {
             const licenseId: BigNumber = BigNumber.from("0x36054b77b837c9ab");
             const buyRight = await this.pinture.connect(this.signers.user).buy(licenseId, {value:BigNumber.from(1)});
             const ownerOfLic = await this.licenseToken.connect(this.signers.user).ownerOf(licenseId);
+            const allTokens = await this.pinture.getListedTokens();
 
             expect(ownerOfLic).to.equal(this.signers.user.address);
+            expect(allTokens.length).to.equal(1);
+            expect(allTokens[0]).to.equal(BigNumber.from("0x36054b77b837c9ab"));
         })
 
     })
