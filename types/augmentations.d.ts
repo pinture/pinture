@@ -5,6 +5,7 @@ import { Signers } from "./";
 import { Greeter } from "../typechain/Greeter";
 import { PictureToken } from "../typechain/PictureToken";
 import { LicenseToken } from "../typechain/LicenseToken";
+import { Pinture } from "../typechain/Pinture";
 
 declare module "mocha" {
   export interface Context {
@@ -13,5 +14,6 @@ declare module "mocha" {
     signers: Signers;
     pictureToken: PictureToken;
     licenseToken: LicenseToken;
+    pinture: Pinture;
   }
 }

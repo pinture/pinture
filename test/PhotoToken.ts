@@ -8,6 +8,7 @@ import { Signers } from "../types";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 import { LicenseToken } from "../typechain/LicenseToken";
+import { Pinture } from "../typechain/Pinture";
 
 const { deployContract } = hre.waffle;
 
@@ -70,10 +71,33 @@ describe("Deploy contract and mint a token",function () {
             const totalSup: BigNumber = await this.licenseToken.connect(this.signers.admin).totalSupply();
             const tokenByIx: BigNumber = await this.licenseToken.connect(this.signers.admin).tokenByIndex(0);
 
-            // expect(tokenOfOwnerByIndex).to.equal(BigNumber.from(100));
+            expect(tokenOfOwnerByIndex).to.equal(BigNumber.from("0x36054b77b837c9ab"));
             expect(totalSup).to.equal(BigNumber.from(1));
-            // expect(tokenByIx).to.equal(BigNumber.from(100));
+            expect(tokenByIx).to.equal(BigNumber.from("0x36054b77b837c9ab"));
         })
+
+        it("deploy Pinture contract", async function () {
+            const pintureArtifact: Artifact = await hre.artifacts.readArtifact("Pinture");
+            this.pinture = <Pinture>await deployContract(this.signers.admin, pintureArtifact, [this.licenseToken.address]);
+        }); 
+
+        it("Photographer sell license on the market", async function(){
+            const licenseId: BigNumber = BigNumber.from("0x36054b77b837c9ab");
+            const approval = await this.licenseToken.connect(this.signers.photographer).approve(this.pinture.address,licenseId);
+            const setPrice = await this.pinture.connect(this.signers.photographer).setPrice(licenseId, 1);
+            const getPrice = await this.pinture.connect(this.signers.photographer).getPrice(licenseId);
+
+            expect(getPrice).to.equal(BigNumber.from(1));
+        })
+
+        it("User buy it from the market", async function(){
+            const licenseId: BigNumber = BigNumber.from("0x36054b77b837c9ab");
+            const buyRight = await this.pinture.connect(this.signers.user).buy(licenseId, {value:BigNumber.from(1)});
+            const ownerOfLic = await this.licenseToken.connect(this.signers.user).ownerOf(licenseId);
+
+            expect(ownerOfLic).to.equal(this.signers.user.address);
+        })
+
     })
 
 })
