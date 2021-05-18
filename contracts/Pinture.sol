@@ -10,6 +10,8 @@ contract Pinture {
     address private licenseTokenAddr;
 
     mapping(uint256 => uint256) private _tokenIdToPrice;
+    
+    uint256[] private _allTokens;
 
     event Buy(uint256 tokenId , address buyer, uint256 price);
     event SetPrice(address owner, uint256 tokenId , uint256 price);
@@ -18,8 +20,12 @@ contract Pinture {
         _token = licenseToken;
     }
 
+    function getListedTokens() public view returns( uint256[] memory ){
+        return _allTokens;
+    }
     function setPrice(uint256 tokenId, uint256 price) public _checkApproval(tokenId) {
         _tokenIdToPrice[tokenId] = price;
+        _allTokens.push(tokenId);
 
         emit SetPrice(msg.sender, tokenId, price);
     }
