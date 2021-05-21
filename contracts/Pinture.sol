@@ -28,9 +28,12 @@ contract Pinture {
     }
 
     function setPrice(uint256 tokenId, uint256 price) public _checkApproval(tokenId) {
+        if (_tokenIdToPrice[tokenId] == 0) {
+            _allTokensIndex[tokenId] = _allTokens.length;
+            _allTokens.push(tokenId);
+        }
+        
         _tokenIdToPrice[tokenId] = price;
-        _allTokensIndex[tokenId] = _allTokens.length;
-        _allTokens.push(tokenId);
 
         emit SetPrice(msg.sender, tokenId, price);
     }
@@ -42,13 +45,13 @@ contract Pinture {
     function cancel(uint256 tokenId) public _checkApproval(tokenId) {
         require(_token.ownerOf(tokenId) == msg.sender, "You are not the owner of the token.");
         delete _tokenIdToPrice[tokenId];
-        
+
         uint256 lastTokenIndex = _allTokens.length - 1;
         uint256 tokenIndex = _allTokensIndex[tokenId];
 
         uint256 lastTokenId = _allTokens[lastTokenIndex];
 
-        _allTokens[tokenIndex] = lastTokenId; 
+        _allTokens[tokenIndex] = lastTokenId;
         _allTokensIndex[lastTokenId] = tokenIndex;
 
         delete _allTokensIndex[tokenId];
