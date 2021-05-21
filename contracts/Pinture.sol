@@ -27,12 +27,12 @@ contract Pinture {
         return _allTokens;
     }
 
-    function setPrice(uint256 tokenId, uint256 price) public _checkApproval(tokenId) {
+    function setPrice(uint256 tokenId, uint256 price) public _checkApproval(tokenId) _onlyOwnerOfToken(tokenId) {
         if (_tokenIdToPrice[tokenId] == 0) {
             _allTokensIndex[tokenId] = _allTokens.length;
             _allTokens.push(tokenId);
         }
-        
+
         _tokenIdToPrice[tokenId] = price;
 
         emit SetPrice(msg.sender, tokenId, price);
@@ -42,7 +42,7 @@ contract Pinture {
         return _tokenIdToPrice[tokenId];
     }
 
-    function cancel(uint256 tokenId) public _checkApproval(tokenId) {
+    function cancel(uint256 tokenId) public _checkApproval(tokenId) _onlyOwnerOfToken(tokenId) {
         require(_token.ownerOf(tokenId) == msg.sender, "You are not the owner of the token.");
         delete _tokenIdToPrice[tokenId];
 
@@ -71,6 +71,11 @@ contract Pinture {
 
     modifier _checkApproval(uint256 tokenId) {
         require(address(this) == _token.getApproved(tokenId), "This token haven't been approved for Pinture yet.");
+        _;
+    }
+
+    modifier _onlyOwnerOfToken(uint256 tokenId) {
+        require(msg.sender == _token.ownerOf(tokenId), "You are not the owner of license token.");
         _;
     }
 }
