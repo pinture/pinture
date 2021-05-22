@@ -103,10 +103,15 @@ describe("Deploy contract and mint a token",function () {
 
         it("User buy it from the market", async function(){
             const licenseId: BigNumber = BigNumber.from("0x36054b77b837c9ab");
-            const buyRight = await this.pinture.connect(this.signers.user).buy(licenseId, {value:BigNumber.from(1)});
+            const balanceOfPhotographer = await this.signers.photographer.getBalance();
+            const price:BigNumber = BigNumber.from(1)
+
+            const buyRight = await this.pinture.connect(this.signers.user).buy(licenseId, {value:price});
             const ownerOfLic = await this.licenseToken.connect(this.signers.user).ownerOf(licenseId);
             const allTokens = await this.pinture.getListedTokens();
+            const balanceOfPhotographer1 = await this.signers.photographer.getBalance();
 
+            expect(balanceOfPhotographer1.sub(balanceOfPhotographer)).to.equal(price);
             expect(ownerOfLic).to.equal(this.signers.user.address);
             expect(allTokens.length).to.equal(1);
             expect(allTokens[0]).to.equal(BigNumber.from("0x84eab3c18994358b"));

@@ -56,6 +56,9 @@ contract Pinture {
 
         address ownerOfToken = _token.ownerOf(tokenId);
 
+        (bool sent, ) = ownerOfToken.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+
         _removeTokenFromAllTokens(tokenId);
 
         _token.safeTransferFrom(ownerOfToken, msg.sender, tokenId);
