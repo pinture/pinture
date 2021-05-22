@@ -46,6 +46,23 @@ contract Pinture {
         require(_token.ownerOf(tokenId) == msg.sender, "You are not the owner of the token.");
         delete _tokenIdToPrice[tokenId];
 
+        _removeTokenFromAllTokens(tokenId);
+
+        emit Cancel(tokenId);
+    }
+
+    function buy(uint256 tokenId) external payable _checkApproval(tokenId) {
+        require(_tokenIdToPrice[tokenId] == msg.value, "The given ether is not matching the price");
+
+        address ownerOfToken = _token.ownerOf(tokenId);
+
+        _removeTokenFromAllTokens(tokenId);
+
+        _token.safeTransferFrom(ownerOfToken, msg.sender, tokenId);
+        emit Buy(tokenId, msg.sender, msg.value);
+    }
+
+    function _removeTokenFromAllTokens(uint256 tokenId) private {
         uint256 lastTokenIndex = _allTokens.length - 1;
         uint256 tokenIndex = _allTokensIndex[tokenId];
 
@@ -56,17 +73,6 @@ contract Pinture {
 
         delete _allTokensIndex[tokenId];
         _allTokens.pop();
-
-        emit Cancel(tokenId);
-    }
-
-    function buy(uint256 tokenId) external payable _checkApproval(tokenId) {
-        require(_tokenIdToPrice[tokenId] == msg.value, "The given ether is not matching the price");
-
-        address ownerOfToken = _token.ownerOf(tokenId);
-
-        _token.safeTransferFrom(ownerOfToken, msg.sender, tokenId);
-        emit Buy(tokenId, msg.sender, msg.value);
     }
 
     modifier _checkApproval(uint256 tokenId) {

@@ -108,8 +108,8 @@ describe("Deploy contract and mint a token",function () {
             const allTokens = await this.pinture.getListedTokens();
 
             expect(ownerOfLic).to.equal(this.signers.user.address);
-            expect(allTokens.length).to.equal(2);
-            expect(allTokens[0]).to.equal(BigNumber.from("0x36054b77b837c9ab"));
+            expect(allTokens.length).to.equal(1);
+            expect(allTokens[0]).to.equal(BigNumber.from("0x84eab3c18994358b"));
         })
 
         it("Photographer cancel the sell of license token", async function () { 
@@ -118,7 +118,7 @@ describe("Deploy contract and mint a token",function () {
             const disapproval = await this.licenseToken.connect(this.signers.photographer).approve( hre.ethers.constants.AddressZero, licenseId );
             const allTokens = await this.pinture.getListedTokens();
 
-            expect(allTokens.length).to.equal(1);
+            expect(allTokens.length).to.equal(0);
         })
     })
 })
