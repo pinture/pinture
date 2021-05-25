@@ -53,8 +53,9 @@ contract Pinture {
 
     function buy(uint256 tokenId) external payable _checkApproval(tokenId) {
         require(_tokenIdToPrice[tokenId] == msg.value, "The given ether is not matching the price");
-
         address ownerOfToken = _token.ownerOf(tokenId);
+
+        require(ownerOfToken != msg.sender, "You don't have to buy your license!");
 
         (bool sent, ) = ownerOfToken.call{value: msg.value}("");
         require(sent, "Failed to send Ether");
@@ -73,7 +74,8 @@ contract Pinture {
 
         _allTokens[tokenIndex] = lastTokenId;
         _allTokensIndex[lastTokenId] = tokenIndex;
-
+        
+        delete _tokenIdToPrice[tokenId];
         delete _allTokensIndex[tokenId];
         _allTokens.pop();
     }
